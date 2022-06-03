@@ -10,14 +10,14 @@ default: build
 
 build:
 	@docker build \
-		--cache-from ${IMAGE_TAG} \
-		--tag ${IMAGE_TAG} \
+		--cache-from ${IMAGE} \
+		--tag ${IMAGE} \
 		-f .docker/Dockerfile .
 
 build-nocache:
 	@docker build \
 		--pull --no-cache \
-		--tag ${IMAGE_TAG} \
+		--tag ${IMAGE} \
 		-f .docker/Dockerfile .
 
 rmi:
