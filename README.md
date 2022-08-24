@@ -1,7 +1,13 @@
-# Docker: Helm
+# Docker: helm
 
-Образ Alpine Linux с Helm и curl, предназначенный для сборки чартов.
+Образ Alpine Linux с `helm` и `curl`, предназначенный для сборки чартов.
 
 ## Теги
 
-* git.devmem.ru/projects/helm:latest
+```shell
+ghcr.io/spirkaa/helm:latest
+```
+
+```shell
+git.devmem.ru/projects/helm:latest
+```
