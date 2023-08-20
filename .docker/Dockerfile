@@ -1,18 +1,29 @@
-FROM alpine:3.16
+# hadolint global ignore=DL3006,DL3018
 
-RUN set -eux \
-    && apk add --update --no-cache \
+ARG BUILD_IMAGE=alpine:3.18
+
+FROM ${BUILD_IMAGE}
+
+ARG CURL="curl -fsSL"
+
+SHELL [ "/bin/ash", "-euxo", "pipefail", "-c" ]
+WORKDIR /usr/local/bin
+
+RUN apk add --update --no-cache \
         bash \
-        curl
+        curl \
+        jq
 
-RUN set -eux \
-    && cd /tmp \
-    && HELM_VERSION="$(curl -fsS -L -o /dev/null -w %{url_effective} https://github.com/helm/helm/releases/latest | sed 's/^.*\///g' )" \
-    && curl -fsS -L -O https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz \
-    && tar xvfz helm-${HELM_VERSION}-linux-amd64.tar.gz \
-    && mv linux-amd64/helm /usr/bin/helm \
-    && chmod +x /usr/bin/helm \
-    && rm -rf linux-amd64 helm-${HELM_VERSION}-linux-amd64.tar.gz \
+RUN YQ_VERSION="$(${CURL} -o /dev/null -w %\{url_effective\} https://github.com/mikefarah/yq/releases/latest | sed 's/^.*\///g' )" \
+    && ${CURL} "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz" | tar xzO ./yq_linux_amd64 > yq \
+    && chmod +x yq \
+    && yq --version | grep -E "${YQ_VERSION}"
+
+RUN HELM_VERSION="$(${CURL} -o /dev/null -w %\{url_effective\} https://github.com/helm/helm/releases/latest | sed 's/^.*\///g' )" \
+    && ${CURL} "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz" | tar xzO linux-amd64/helm > helm \
+    && chmod +x helm \
     && helm version | grep -E "${HELM_VERSION}"
+
+WORKDIR /
 
 CMD [ "/bin/bash" ]

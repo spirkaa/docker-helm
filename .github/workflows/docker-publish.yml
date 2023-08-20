@@ -13,8 +13,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.actor }}/helm
-  TAG: latest
+  IMAGE_NAME: helm
 
 jobs:
   build:
@@ -43,13 +42,13 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.IMAGE_NAME }}
           tags: |
-            ${{ env.TAG }}
+            type=raw,value=latest
 
       - name: Build and push image
         id: build-and-push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           file: .docker/Dockerfile
